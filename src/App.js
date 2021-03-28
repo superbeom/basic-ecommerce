@@ -1,29 +1,40 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { commerce } from "./lib/commerce";
+
+import { ShoppingProvider } from "./context/ShoppingContext";
 
 import { Navbar, Products, Cart } from "./components";
 
 const App = () => {
+  const [productIsLodded, setProductIsLodded] = useState(false);
+  const [cartIsLodded, setCartIsLodded] = useState(false);
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
 
   const fetchProducts = async () => {
-    const { data } = await commerce.products.list();
+    try {
+      const { data } = await commerce.products.list();
 
-    setProducts(data);
+      if (data) {
+        setProducts(data);
+        setProductIsLodded(true);
+      }
+    } catch (error) {
+      console.log("Error @fetchProducts_App: ", error.message);
+    }
   };
 
   const fetchCart = async () => {
-    setCart(await commerce.cart.retrieve());
-  };
+    try {
+      const data = await commerce.cart.retrieve();
 
-  const handleAddToCart = async (productId, quantity) => {
-    const { success, cart } = await commerce.cart.add(productId, quantity);
-
-    if (success) {
-      setCart(cart);
-    } else {
-      console.warn("You can't add this item to shopping cart.");
+      if (data) {
+        setCart(data);
+        setCartIsLodded(true);
+      }
+    } catch (error) {
+      console.log("Error @fetchCart_App: ", error.message);
     }
   };
 
@@ -32,12 +43,24 @@ const App = () => {
     fetchCart();
   }, []);
 
-  return (
-    <div>
-      <Navbar totalItems={cart?.total_items} />
-      {/* <Products products={products} onAddToCart={handleAddToCart} /> */}
-      <Cart cart={cart} />
-    </div>
+  return productIsLodded && cartIsLodded ? (
+    <ShoppingProvider products={products} cart={cart}>
+      <Router>
+        <div>
+          <Navbar />
+          <Switch>
+            <Route exact path="/">
+              <Products />
+            </Route>
+            <Route exact path="/cart">
+              <Cart />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
+    </ShoppingProvider>
+  ) : (
+    <h1>Loading...</h1>
   );
 };
 
