@@ -9,7 +9,7 @@ const Product = ({product: {id, name, description, price, media}, onAddToCart}) 
     
     return (
         <Card className={classes.card}>
-            <CardMedia className={classes.media} image={media.source} title={name} />
+            <CardMedia className={classes.media} image={media?.source} title={name} />
             
             <CardContent>
                 <div className={classes.cardContent}>
@@ -17,7 +17,7 @@ const Product = ({product: {id, name, description, price, media}, onAddToCart}) 
                         {name}
                     </Typography>
                     <Typography variant="h5">
-                        {price.formatted}
+                        {price?.formatted}
                     </Typography>
                     <Typography dangerouslySetInnerHTML={{
                         __html: description
