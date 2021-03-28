@@ -8,7 +8,7 @@ export const ShoppingProvider = ({
   cart: cartProp,
   children,
 }) => {
-  const [products, setProducts] = useState(productsProp);
+  const products = productsProp;
   const [cart, setCart] = useState(cartProp);
 
   const addToCart = async (productId, quantity) => {
@@ -72,6 +72,16 @@ export const ShoppingProvider = ({
     }
   };
 
+  const refreshCart = async () => {
+    try {
+      const newCart = await commerce.cart.refresh();
+
+      setCart(newCart);
+    } catch (error) {
+      console.log("Error @refreshCart_ShoppingContext: ", error.message);
+    }
+  };
+
   return (
     <ShoppingContext.Provider
       value={{
@@ -81,6 +91,7 @@ export const ShoppingProvider = ({
         updateCartQty,
         removeFromCart,
         emptyCart,
+        refreshCart,
       }}
     >
       {children}
@@ -116,4 +127,9 @@ export const useRemoveFromCart = () => {
 export const useEmptyCart = () => {
   const { emptyCart } = useContext(ShoppingContext);
   return emptyCart;
+};
+
+export const useRefreshCart = () => {
+  const { refreshCart } = useContext(ShoppingContext);
+  return refreshCart;
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { commerce } from "./lib/commerce";
 
-import { ShoppingProvider } from "./context/ShoppingContext";
+import { ShoppingProvider, useRefreshCart } from "./context/ShoppingContext";
 
 import { Navbar, Products, Cart, Checkout } from "./components";
 
@@ -11,6 +11,9 @@ const App = () => {
   const [cartIsLodded, setCartIsLodded] = useState(false);
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
+  const [order, setOrder] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");
+  const refreshCart = useRefreshCart();
 
   const fetchProducts = async () => {
     try {
@@ -38,6 +41,22 @@ const App = () => {
     }
   };
 
+  const handleCaptureCheckout = async (checkoutTokenId, newOrder) => {
+    try {
+      const incomingOrder = await commerce.checkout.capture(
+        checkoutTokenId,
+        newOrder
+      );
+
+      setOrder(incomingOrder);
+      refreshCart();
+    } catch (error) {
+      console.log("Error @handleCaptureCheckout_App: ", error.message);
+
+      setErrorMessage(error?.data?.error?.message);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
     fetchCart();
@@ -56,7 +75,11 @@ const App = () => {
               <Cart />
             </Route>
             <Route exact path="/checkout">
-              <Checkout />
+              <Checkout
+                onCaptureCheckout={handleCaptureCheckout}
+                order={order}
+                error={errorMessage}
+              />
             </Route>
           </Switch>
         </div>
