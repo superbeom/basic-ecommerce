@@ -21,7 +21,7 @@ const CartItem = ({item}) => {
                 <div className={classes.buttons}>
                     <Button type="button" size="small" onClick={updateCartQty.bind(this, item?.id, Math.max(0, item?.quantity - 1))}>-</Button>
                     <Typography>{item?.quantity}</Typography>
-                    <Button type="button" size="small" onClick={removeFromCart.bind(this, item?.id, Math.min(10, item?.quantity + 1))}>+</Button>
+                    <Button type="button" size="small" onClick={updateCartQty.bind(this, item?.id, Math.min(10, item?.quantity + 1))}>+</Button>
                 </div>
                 <Button variant="contained" type="button" color="secondary" onClick={removeFromCart.bind(this, item?.id)}>Remove</Button>
             </CardActions>

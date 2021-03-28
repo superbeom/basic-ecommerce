@@ -55,6 +55,23 @@ export const ShoppingProvider = ({
     }
   };
 
+  const emptyCart = async () => {
+    try {
+      const { success, cart } = await commerce.cart.empty();
+
+      console.log("success: ", success);
+      console.log("cart: ", cart);
+
+      if (success) {
+        setCart(cart);
+      } else {
+        console.warn("You can't empty cart.");
+      }
+    } catch (error) {
+      console.log("Error @emptyCart_ShoppingContext: ", error.message);
+    }
+  };
+
   return (
     <ShoppingContext.Provider
       value={{
@@ -63,6 +80,7 @@ export const ShoppingProvider = ({
         addToCart,
         updateCartQty,
         removeFromCart,
+        emptyCart,
       }}
     >
       {children}
@@ -93,4 +111,9 @@ export const useUpdateCartQty = () => {
 export const useRemoveFromCart = () => {
   const { removeFromCart } = useContext(ShoppingContext);
   return removeFromCart;
+};
+
+export const useEmptyCart = () => {
+  const { emptyCart } = useContext(ShoppingContext);
+  return emptyCart;
 };
