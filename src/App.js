@@ -4,7 +4,7 @@ import { commerce } from "./lib/commerce";
 
 import { ShoppingProvider } from "./context/ShoppingContext";
 
-import { Navbar, Products, Cart } from "./components";
+import { Navbar, Products, Cart, Checkout } from "./components";
 
 const App = () => {
   const [productIsLodded, setProductIsLodded] = useState(false);
@@ -54,6 +54,9 @@ const App = () => {
             </Route>
             <Route exact path="/cart">
               <Cart />
+            </Route>
+            <Route exact path="/checkout">
+              <Checkout />
             </Route>
           </Switch>
         </div>
